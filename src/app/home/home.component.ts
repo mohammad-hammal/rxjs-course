@@ -1,25 +1,72 @@
-import {Component, OnInit} from '@angular/core';
-import {Course} from "../model/course";
-import {interval, Observable, of, timer} from 'rxjs';
-import {catchError, delayWhen, map, retryWhen, shareReplay, tap} from 'rxjs/operators';
-
+import { Component, OnInit } from "@angular/core";
+import { Course } from "../model/course";
+import { interval, Observable, of, timer } from "rxjs";
+import {
+  catchError,
+  delayWhen,
+  filter,
+  map,
+  retryWhen,
+  shareReplay,
+  tap,
+} from "rxjs/operators";
+import { createHttpObservable } from ".././common/util";
 
 @Component({
-    selector: 'home',
-    templateUrl: './home.component.html',
-    styleUrls: ['./home.component.css']
+  selector: "home",
+  templateUrl: "./home.component.html",
+  styleUrls: ["./home.component.css"],
 })
 export class HomeComponent implements OnInit {
+  beginnerCourses$: any;
+  advancedCourses$: Observable<Course[]>;
 
+  constructor() {}
 
-    constructor() {
+  ngOnInit() {
+    // const interval$ = interval(1000);
 
-    }
+    // const sub = interval$.subscribe((data) => {
+    //   console.log(data);
+    // });
 
-    ngOnInit() {
+    // setTimeout(() => sub.unsubscribe(), 5000);
 
+    // const click$ = fromEvent(document, "click");
 
+    // click$.subscribe(
+    //   // Steam working
+    //   (evt) => console.log(evt),
+    //   // Error in the stream
+    //   (err) => console.log(err),
+    //   // Stream is completed on etheir side
+    //   () => console.log("Completed")
+    // );
 
-    }
+    const http$ = createHttpObservable("/api/courses");
+    const courses$ = http$.pipe(map((res) => res["payload"]));
 
+    this.beginnerCourses$ = courses$.pipe(
+      filter((course: Course) => course.category === "BEGINNER")
+    );
+
+    // this.advancedCourses$ =
+
+    const subscriber = {
+      next: (res) => console.log(res),
+      error: (err) => console.log(err),
+      complete: () => console.log("Completed"),
+    };
+
+    courses$.subscribe(
+      // (res) =>
+      //   console.log(
+      //     "------------------- This is res -=------------------",
+      //     res
+      //   ),
+      // noop,
+      // () => console.log("Completed")
+      subscriber
+    );
+  }
 }
