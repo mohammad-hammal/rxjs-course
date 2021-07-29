@@ -18,7 +18,7 @@ import { createHttpObservable } from ".././common/util";
   styleUrls: ["./home.component.css"],
 })
 export class HomeComponent implements OnInit {
-  beginnerCourses$: any;
+  beginnerCourses$: Observable<Course[]>;
   advancedCourses$: Observable<Course[]>;
 
   constructor() {}
@@ -47,13 +47,19 @@ export class HomeComponent implements OnInit {
     const courses$ = http$.pipe(map((res) => res["payload"]));
 
     this.beginnerCourses$ = courses$.pipe(
-      filter((course: Course) => course.category === "BEGINNER")
+      map((courses) =>
+        courses.filter((course) => course.category === "BEGINNER")
+      )
     );
 
-    // this.advancedCourses$ =
+    this.advancedCourses$ = courses$.pipe(
+      map((courses) =>
+        courses.filter((course) => course.category === "ADVANCED")
+      )
+    );
 
     const subscriber = {
-      next: (res) => console.log(res),
+      next: (res) => console.log("This is res", res),
       error: (err) => console.log(err),
       complete: () => console.log("Completed"),
     };
