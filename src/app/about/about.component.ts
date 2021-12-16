@@ -11,6 +11,7 @@ import {
   merge,
   Subject,
   BehaviorSubject,
+  defer,
 } from "rxjs";
 import { delayWhen, filter, map, take, timeout } from "rxjs/operators";
 import { createHttpObservable } from "../common/util";
@@ -22,6 +23,14 @@ import { createHttpObservable } from "../common/util";
 })
 export class AboutComponent implements OnInit {
   ngOnInit() {
+    const example = defer(() => of(Math.floor(Math.random() * 100)));
+
+    example.subscribe((val) => console.log("Before While", val));
+
+    setTimeout(() => {
+      example.subscribe((val) => console.log("After While", val));
+    }, 3000);
+
     // const subject = new Subject();
     const subject = new BehaviorSubject(0);
 
